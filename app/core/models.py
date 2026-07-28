@@ -6,7 +6,7 @@ from app.core.exceptions import ModelNotFoundError
 
 MODEL_MAP: dict[str, str] = {
     "qwen": "qwen:0.5b",
-    # "llama": "llama3.2:1b",
+    "llama": "llama:1b",
 }
 
 
