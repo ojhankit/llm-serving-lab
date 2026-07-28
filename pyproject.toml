@@ -1,0 +1,33 @@
+[project]
+name = "llm-serving"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.18.5",
+    "asyncpg>=0.31.0",
+    "fastapi>=0.140.9",
+    "httpx>=0.28.1",
+    "loguru>=0.7.3",
+    "passlib[bcrypt]>=1.7.4",
+    "prometheus-fastapi-instrumentator>=8.1.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.2",
+    "python-dotenv>=1.2.2",
+    "python-jose[cryptography]>=3.5.0",
+    "redis>=8.0.1",
+    "sqlalchemy>=2.0.51",
+    "tenacity>=9.1.4",
+    "tiktoken>=0.13.0",
+    "uvicorn[standard]>=0.51.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=26.5.1",
+    "isort>=8.0.1",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.16.0",
+]
