@@ -3,10 +3,13 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.routes.chat import router as chat_router
+from app.routes import health, model
+
 from app.clients.ollama import ollama_client
+
 from app.core.logger import logger
 from app.core.handlers import register_exception_handlers
-from app.routes import health, model
+from app.core.middleware import RequestIDMiddleware
 
 
 @asynccontextmanager
@@ -24,6 +27,8 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+app.add_middleware(RequestIDMiddleware)
 
 register_exception_handlers(app)
 

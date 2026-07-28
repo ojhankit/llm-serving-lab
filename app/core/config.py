@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     API_VERSION: str = "1.0.0"
 
     OLLAMA_BASE_URL: str = "http://127.0.0.1:11434"
-    OLLAMA_TIMEOUT: float = 120.0
+    OLLAMA_READ_TIMEOUT: float = 5.0
+    OLLAMA_CONNECT_TIMEOUT: float = 60.0
 
     LOG_LEVEL: str = "INFO"
 

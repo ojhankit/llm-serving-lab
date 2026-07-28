@@ -14,7 +14,8 @@ class OllamaClient(HTTPClient):
     def __init__(self) -> None:
         super().__init__(
             base_url=settings.OLLAMA_BASE_URL,
-            timeout=settings.OLLAMA_TIMEOUT,
+            connect_timeout=settings.OLLAMA_CONNECT_TIMEOUT,
+            read_timeout=settings.OLLAMA_READ_TIMEOUT,
         )
 
     async def chat(
