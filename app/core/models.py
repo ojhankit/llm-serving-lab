@@ -1,20 +1,27 @@
 """
-central registry fr all supported models
+central registry for all supported models
 """
 
-MODEL_MAP : dict[str, str] = {
-    "qwen" : "qwen:0.5b",
-    #"llama" : "llama3.2:1b",
+from app.core.exceptions import ModelNotFoundError
+
+MODEL_MAP: dict[str, str] = {
+    "qwen": "qwen:0.5b",
+    # "llama": "llama3.2:1b",
 }
+
 
 def get_model(model_alias: str) -> str:
     """
-    return true model name
+    Return true model name for a given alias.
+
+    Raises:
+        ModelNotFoundError: if the alias isn't in MODEL_MAP.
     """
     try:
         return MODEL_MAP[model_alias]
     except KeyError:
-        raise ValueError(f"Unsupported model: {model_alias}") 
+        raise ModelNotFoundError(model_alias) from None
+
 
 def list_models() -> list[str]:
     """

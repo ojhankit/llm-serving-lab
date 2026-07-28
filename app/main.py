@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from app.routes.chat import router as chat_router
 from app.clients.ollama import ollama_client
 from app.core.logger import logger
+from app.core.handlers import register_exception_handlers
 
 
 @asynccontextmanager
@@ -22,7 +23,7 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
-
+register_exception_handlers(app)
 app.include_router(chat_router)
 
 @app.get("/", tags=["Health"])

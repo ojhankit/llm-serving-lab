@@ -1,12 +1,20 @@
+import httpx
+
 from app.clients.http import HTTPClient
 from app.core.logger import logger
+from app.core.config import settings
+from app.core.exceptions import (
+    OllamaConnectionError,
+    OllamaTimeoutError,
+    OllamaResponseError,
+)
 
 
 class OllamaClient(HTTPClient):
     def __init__(self) -> None:
         super().__init__(
-            base_url="http://localhost:11434",
-            timeout=120.0,
+            base_url=settings.OLLAMA_BASE_URL,
+            timeout=settings.OLLAMA_TIMEOUT,
         )
 
     async def chat(
@@ -21,15 +29,44 @@ class OllamaClient(HTTPClient):
             "stream": stream,
         }
 
-        response = await self.post("/api/chat", json=payload)
+        logger.debug(f"Ollama chat request -> model={model}, messages={len(messages)}")
 
-        #logger.info(f"Request URL: {response.request.url}")
-        #logger.info(f"Status: {response.status_code}")
-        #logger.info(f"Response: {response.text}")
+        try:
+            response = await self.post("/api/chat", json=payload)
+            response.raise_for_status()
 
-        response.raise_for_status()
+        except httpx.ConnectError as e:
+            logger.error(f"Ollama connection failed: {e}")
+            raise OllamaConnectionError(
+                "Could not connect to Ollama server"
+            ) from e
+
+        except httpx.TimeoutException as e:
+            logger.error(f"Ollama request timed out: {e}")
+            raise OllamaTimeoutError(
+                "Ollama request timed out"
+            ) from e
+
+        except httpx.HTTPStatusError as e:
+            detail = self._extract_error_detail(e.response)
+            logger.error(f"Ollama returned {e.response.status_code}: {detail}")
+            raise OllamaResponseError(
+                status_code=e.response.status_code,
+                detail=detail,
+            ) from e
+
+        logger.debug(f"Ollama chat response received: status={response.status_code}")
 
         return response.json()
+
+    @staticmethod
+    def _extract_error_detail(response: httpx.Response) -> str:
+        """Ollama typically returns {"error": "..."} on failure."""
+        try:
+            body = response.json()
+            return body.get("error", response.text)
+        except ValueError:
+            return response.text
 
 
 ollama_client = OllamaClient()
