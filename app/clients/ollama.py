@@ -8,6 +8,7 @@ from app.core.exceptions import (
     OllamaTimeoutError,
     OllamaResponseError,
 )
+from app.core.retry import ollama_retry
 
 
 class OllamaClient(HTTPClient):
@@ -17,7 +18,7 @@ class OllamaClient(HTTPClient):
             connect_timeout=settings.OLLAMA_CONNECT_TIMEOUT,
             read_timeout=settings.OLLAMA_READ_TIMEOUT,
         )
-
+    @ollama_retry
     async def chat(
         self,
         model: str,
@@ -68,6 +69,7 @@ class OllamaClient(HTTPClient):
         except (httpx.ConnectError, httpx.TimeoutException):
             return False
 
+    @ollama_retry
     async def list_pulled_models(self) -> list[str]:
         """
         Query Ollama's /api/tags to get models actually pulled/available.

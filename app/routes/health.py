@@ -1,14 +1,17 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from app.clients.ollama import ollama_client
 from app.core.config import settings
+from app.core.rate_limiter import RateLimiter
 from app.schemas.health import HealthResponse, OllamaStatus
 
 router = APIRouter(tags=["health"])
 
 
 @router.get("/health", response_model=HealthResponse)
-async def health_check() -> HealthResponse:
+async def health_check(
+    _ = Depends(RateLimiter(requests=3, window_seconds=10))
+) -> HealthResponse:
     ollama_alive = await ollama_client.is_alive()
 
     return HealthResponse(

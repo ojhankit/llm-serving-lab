@@ -17,6 +17,12 @@ class Settings(BaseSettings):
 
     LOG_LEVEL: str = "INFO"
 
+    # Rate Limiting Configuration
+    RATE_LIMIT_BACKEND: str = "memory"  # "memory", "redis"
+    REDIS_URL: str = "redis://localhost:6379/0"
+    DEFAULT_CHAT_LIMIT: int = 5         # Requests
+    DEFAULT_CHAT_WINDOW: int = 60       # Seconds
+
 def get_settings() -> Settings:
     return Settings()
 

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from app.core.exceptions import (
     LLMServiceError, OllamaConnectionError, OllamaTimeoutError,
-    ModelNotFoundError, OllamaResponseError, InvalidRequestError
+    ModelNotFoundError, OllamaResponseError, InvalidRequestError, RateLimitExceededError
 )
 import logging
 
@@ -53,4 +53,18 @@ def register_exception_handlers(app: FastAPI):
         return JSONResponse(
             status_code=500,
             content={"error": "internal_error", "message": exc.message}
+        )
+
+    @app.exception_handler(RateLimitExceededError)
+    async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceededError):
+        return JSONResponse(
+            status_code=429,
+            headers={"Retry-After": str(int(exc.retry_after))},
+            content={
+                "error": "rate_limit_exceeded",
+                "message": exc.message,
+                "limit": exc.limit,
+                "window": exc.window,
+                "retry_after": int(exc.retry_after)
+            }
         )

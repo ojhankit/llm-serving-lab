@@ -34,3 +34,11 @@ class OllamaResponseError(LLMServiceError):
 class InvalidRequestError(LLMServiceError):
     """Raised for bad input from the client (e.g. empty prompt)."""
     pass
+
+class RateLimitExceededError(LLMServiceError):
+    """Raised when a client exceeds their rate limit."""
+    def __init__(self, limit: int, window: int, retry_after: float):
+        self.limit = limit
+        self.window = window
+        self.retry_after = retry_after
+        super().__init__(f"Rate limit exceeded: {limit} requests per {window}s. Retry after {retry_after:.1f}s.")
